@@ -1,0 +1,49 @@
+textarea {
+    min-height: 400px;
+}
+
+@keyframes growDown {
+    0%   {
+       height:0px;
+    }
+     
+    100%  {
+        font-size: 20px;
+        height:400px;
+    }
+  }
+  @keyframes growUp {
+    0%   {
+       height:400px;
+    }
+     
+    100%  {
+        font-size: 20px;
+        height:0px;
+    }
+  }
+
+
+.messageHolder{
+    color: blue;
+    font-size: 0px;
+    animation-name: growDown;
+    animation-duration: 2s;
+    animation-fill-mode: forwards;
+    animation-play-state: paused;
+}
+
+.messageHolderBIG{
+    color: blue;
+    font-size: 0px;
+    animation-name: growUp;
+    animation-duration: 2s;
+    animation-fill-mode: forwards;
+    animation-play-state: paused;
+}
+
+h1{
+    font-size: 6px;    
+}
+
+ 
