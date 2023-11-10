@@ -44,7 +44,8 @@ function open_mail(mail_id) {
         recipients.innerHTML = `<b>To:</b> ${mail.recipients}<br>`;
         subject.innerHTML = `<b>Subject:</b> ${mail.subject}<br>`;
         timestamp.innerHTML = `<b>Timestamp:</b> ${mail.timestamp}<br>`;
-        body.innerHTML = `${mail.body}<br>`;
+        let body_cool =  mail.body.replace(/\r?\n/g, '<br />');
+        body.innerHTML = `${body_cool}<br>`;
         body.style.margin = "20px";
 
         const reply =  document.createElement("button");
@@ -53,6 +54,17 @@ function open_mail(mail_id) {
         reply.className = 'btn btn-primary';
         reply.style.margin = "10px";
 
+        const archive =  document.createElement("button");
+        archive.className = 'archive';
+        archive.id='archive';
+        if (mail.archived){
+          archive.textContent ="Move to Inbox";
+      }else {
+        archive.textContent ="Archive";
+      }
+        //reply.innerHTML = `<button type="button" class="btn btn-primary">Reply</button<br>`;
+        archive.className = 'btn btn-primary';
+        archive.style.margin = "10px";
         //reply.innerHTML = `<button>Reply</button<br>`;
 
         document.querySelector("#email-open").append(sender);
@@ -60,8 +72,45 @@ function open_mail(mail_id) {
         document.querySelector("#email-open").append(subject);
         document.querySelector("#email-open").append(timestamp);
         document.querySelector("#email-open").append(reply);
+        document.querySelector("#email-open").append(archive);
         document.querySelector("#email-open").append(line);
         document.querySelector("#email-open").append(body);
+
+        fetch(`/emails/${mail.id}`, {
+          method: 'PUT',
+          body: JSON.stringify({
+            read: true
+          })
+        })
+
+        archive.addEventListener('click', event => { // archive button 
+          const archive_status= document.querySelector("#archive").textContent;
+          console.log(archive_status);
+          let archived;
+          if (archive_status === 'Archive'){
+            console.log("qui:");
+            document.querySelector("#archive").textContent = "Move to Inbox";
+            archived=true;
+            alert("Email archived.");
+          }
+          else{
+            console.log("qui:");
+            document.querySelector("#archive").textContent = "Archive";
+            archived=false;
+            alert("Email moved to Inbox.");
+          }
+
+          fetch(`/emails/${mail.id}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+              archived: archived
+            })
+          })
+         
+                return false;
+          
+        })
+
 
         reply.addEventListener('click', event => { // reply button 
            
@@ -73,8 +122,13 @@ function open_mail(mail_id) {
           const subject_filed = document.querySelector('#compose-subject');
           subject_filed.value=`Re: ${mail.subject}`;
           const body_filed = document.querySelector('#compose-body');
-          body_filed.value=` \n\n--------------------------------\n\n  ${mail.body}`;
-          body_filed.focus();
+          body_filed.value=` \r\n--------------------------------
+          From: ${mail.sender} 
+          To: ${mail.recipients}
+          Subject:${mail.subject}
+
+          ${mail.body}`;
+         // body_filed.focus();
           const sender_button = document.querySelector("#send_mail");
           sender_button.onclick = () => {
                   
@@ -89,32 +143,17 @@ function open_mail(mail_id) {
             .then(response => response.json())
             .then(result => {
                 // Print result
-                alert(result);
-                console.log(result);
+                alert("Mail sent");
+            load_mailbox('sent');
+            console.log(result);
             });
-                return false;
+           return false;
+                
           } 
         })
  });
 }
-function send_mail(){
-  alert("ready to send");
-  fetch('/emails', {
-    method: 'POST',
-    body: JSON.stringify({
-        recipients: 'john@harvard.edu',
-        subject: 'Meeting time',
-        body: 'How about we meet tomorrow at 3pm?'
-    })
-  })
-  .then(response => response.json())
-  .then(result => {
-      // Print result
-      alert(result);
-      console.log(result);
-  });
-  return false 
-}
+ 
 
 function load_mailbox(mailbox) {
  
@@ -148,11 +187,7 @@ function load_mailbox(mailbox) {
           const messagetimestamp =  document.createElement("div");
           messagetimestamp.className = 'messagetimestamp';
           messagetimestamp.innerHTML = `${mail[i].timestamp}`;
-          /*const messageHolder =  document.createElement("div");
-          messageHolder.className = 'messageHolder';
-          messageHolder.style.height="0px";
-          messageHolder.innerHTML = `${mail[i].body}<br>`;
-          messageHolder.style.animationPlayState = "paused"; */
+ 
           message.append(messageSender);   
           message.append(messageSubject);  
           message.append(messagetimestamp);  

@@ -2,26 +2,12 @@ textarea {
     min-height: 400px;
 }
 
+#compose-body{
+    min-height: 400px;
+
+} 
+
  
-
-.messageHolder{
-    color: blue;
-    font-size: 0px;
-    animation-name: growDown;
-    animation-duration: 2s;
-    animation-fill-mode: forwards;
-    animation-play-state: paused;
-}
-
-.messageHolderBIG{
-    color: blue;
-    font-size: 0px;
-    animation-name: growUp;
-    animation-duration: 2s;
-    animation-fill-mode: forwards;
-    animation-play-state: paused;
-}
-
 .messagetimestamp{
     font-size: 12px;
     text-align:right;
