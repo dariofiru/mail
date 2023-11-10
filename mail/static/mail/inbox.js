@@ -47,12 +47,13 @@ function open_mail(mail_id) {
         body.innerHTML = `${mail.body}<br>`;
         body.style.margin = "20px";
 
-        const reply =  document.createElement("div");
-        reply.innerHTML = `<button>Reply</button<br>`;
-        reply.className = 'reply_button';
+        const reply =  document.createElement("button");
+        reply.textContent ="reply";
+        //reply.innerHTML = `<button type="button" class="btn btn-primary">Reply</button<br>`;
+        reply.className = 'btn btn-primary';
         reply.style.margin = "10px";
 
-        reply.innerHTML = `<button>Reply</button<br>`;
+        //reply.innerHTML = `<button>Reply</button<br>`;
 
         document.querySelector("#email-open").append(sender);
         document.querySelector("#email-open").append(recipients);
@@ -62,15 +63,15 @@ function open_mail(mail_id) {
         document.querySelector("#email-open").append(line);
         document.querySelector("#email-open").append(body);
 
-        reply.addEventListener('click', event => {
-          console.log(mail.timestamp);
+        reply.addEventListener('click', event => { // reply button 
+           
           document.querySelector('#email-open').style.display = 'none';
           document.querySelector('#compose-view').style.display = 'block';
           //document.querySelector('#compose-recipients').style.display = 'none';
           const recipients_filed = document.querySelector('#compose-recipients');
-          recipients_filed.value=` ${mail.recipients}`;
+          recipients_filed.value=`${mail.sender}`;
           const subject_filed = document.querySelector('#compose-subject');
-          subject_filed.value=`${mail.subject}`;
+          subject_filed.value=`Re: ${mail.subject}`;
           const body_filed = document.querySelector('#compose-body');
           body_filed.value=` \n\n--------------------------------\n\n  ${mail.body}`;
           body_filed.focus();
@@ -80,9 +81,9 @@ function open_mail(mail_id) {
             fetch('/emails', {
               method: 'POST',
               body: JSON.stringify({
-                  recipients: "john@harvard.edu",
-                  subject: mail.subject,
-                  body: "12345"
+                  recipients: recipients_filed.value,
+                  subject: subject_filed.value,
+                  body:  body_filed.value
               })
             })
             .then(response => response.json())
@@ -116,14 +117,11 @@ function send_mail(){
 }
 
 function load_mailbox(mailbox) {
-  console.log(mailbox);
+ 
   // Show the mailbox and hide other views
   document.querySelector('#emails-view').style.display = 'block';
   document.querySelector('#email-open').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'none';
-
-
-
 
   fetch(`emails/${mailbox}`)
   .then(response => response.text())
@@ -133,39 +131,41 @@ function load_mailbox(mailbox) {
        
           const message =  document.createElement("div");
           message.className = 'message';
-          message.style.border="3px solid black";
-          message.style.margin="10px"
+          message.style.border="1px solid black";
+          message.style.padding="10px"
+          //message.style.margin="10px"
           message.style.animationPlayState = "paused";
           const messageID =  document.createElement("div");
           messageID.className = 'messageID';
           messageID.innerHTML = `${mail[i].id}`;
           messageID.style.visibility='hidden'
+          messageID.style.height="0px";
           const messageSender =  document.createElement("div");
-          messageSender.innerHTML = `${mail[i].sender}<br>`;
+          messageSender.innerHTML = `<b>${mail[i].sender}</b>    `;
           messageSender.className = 'messageSender';
           const messageSubject =  document.createElement("div");
           messageSubject.innerHTML = `${mail[i].subject}<br>`;   
           const messagetimestamp =  document.createElement("div");
-          messagetimestamp.innerHTML = `${mail[i].timestamp}<br>`;
-          const messageHolder =  document.createElement("div");
+          messagetimestamp.className = 'messagetimestamp';
+          messagetimestamp.innerHTML = `${mail[i].timestamp}`;
+          /*const messageHolder =  document.createElement("div");
           messageHolder.className = 'messageHolder';
-
           messageHolder.style.height="0px";
           messageHolder.innerHTML = `${mail[i].body}<br>`;
-          messageHolder.style.animationPlayState = "paused";
+          messageHolder.style.animationPlayState = "paused"; */
           message.append(messageSender);   
           message.append(messageSubject);  
           message.append(messagetimestamp);  
-          message.append(messageHolder);
+         // message.append(messageHolder);
           message.append(messageID);
           document.querySelector("#emails-view").append(message);
-          //document.querySelector("#emails-view").append(messageSubject);
-          //ocument.querySelector("#emails-view").append(messagetimestamp);
-             if (mail[i].read == false ){
-                //message.style.color= "black";
+       
+             if (mail[i].read === true ){
+               
+                message.style.backgroundColor = "Lightgray";
               }
               else{
-              //message.style.color= "red";
+              message.style.backgroundColor = "white";
               } 
 
               //document.querySelector("#emails-view").append(message);
@@ -179,6 +179,10 @@ function load_mailbox(mailbox) {
         // Loop over the array of elements
         elementsArray.forEach(function(elem){
           // Assign an event handler
+          elem.addEventListener("mouseover", function(){
+            this.style.cursor ="pointer";
+          });
+
           elem.addEventListener("click", function(){
 
            let messageID= document.querySelectorAll(".messageID");

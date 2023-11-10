@@ -17,7 +17,7 @@ class Email(models.Model):
     archived = models.BooleanField(default=False)
 
     def __str__(self) -> str:
-        return f"{self.sender} => {self.subject}"
+        return f"{self.sender} => {self.subject} to {self.user}"
 
     def serialize(self):
         return {
